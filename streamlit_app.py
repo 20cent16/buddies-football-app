@@ -3,7 +3,7 @@ import psycopg2
 
 
 def main():
-    conn = psycopg2.connect('postgres://st.secrets["DB_USERNAME"]:st.secrets["DB_PASSWORD"]@st.secrets["DB_HOST"]:21552/defaultdb?sslmode=require')
+    conn = psycopg2.connect('postgres://'+st.secrets["DB_USERNAME"]+':'+st.secrets["DB_PASSWORD"]+'@'+st.secrets["DB_HOST"]+':21552/defaultdb?sslmode=require')
 
     query_sql = 'SELECT VERSION()'
 
