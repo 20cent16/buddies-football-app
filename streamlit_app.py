@@ -1,9 +1,18 @@
 import streamlit as st
+import psycopg2
 
-# Afficher tous les secrets pour tester
-st.write("🔐 Voici les secrets chargés :")
-st.write(st.secrets)
 
-# Accéder aux secrets et tester
-db_username = st.secrets["DB_USERNAME"]
-st.write(f"DB_USERNAME: {db_username}")
+def main():
+    conn = psycopg2.connect('postgres://st.secrets["DB_USERNAME"]:st.secrets["DB_PASSWORD"]@st.secrets["DB_HOST"]:21552/defaultdb?sslmode=require')
+
+    query_sql = 'SELECT VERSION()'
+
+    cur = conn.cursor()
+    cur.execute(query_sql)
+
+    version = cur.fetchone()[0]
+    print(version)
+
+
+if __name__ == "__main__":
+    main()
