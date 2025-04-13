@@ -76,8 +76,8 @@ def main():
         st.session_state.total_matches = selected_total_matches
 
         # Champ de texte pour filtrer par nom de joueur
-        joueur_input = st.text_input("Filtrer par nom de joueur", "")
-        st.session_state.joueur = joueur_input
+        combo_input = st.text_input("Filtrer par nom de joueur", "")
+        st.session_state.combo = combo_input
 
     # Appliquer les filtres basés sur l'état de session
     df_filtered = df.copy()
@@ -94,7 +94,7 @@ def main():
 
     # Filtrer par nom de joueur
     if st.session_state.joueur:
-        df_filtered = df_filtered[df_filtered['combo'].str.contains(st.session_state.joueur, case=False, na=False)]
+        df_filtered = df_filtered[df_filtered['combo'].str.contains(st.session_state.combo, case=False, na=False)]
 
     # Enlever la colonne d'index (numéro de ligne) et masquer l'index
     df_filtered = df_filtered.reset_index(drop=True)
