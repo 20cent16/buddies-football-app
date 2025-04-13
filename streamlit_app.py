@@ -32,8 +32,8 @@ def main():
     if 'total_matches' not in st.session_state:
         st.session_state.total_matches = (df['total_matchs'].min(), df['total_matchs'].max())
 
-    if 'joueur' not in st.session_state:
-        st.session_state.joueur = ""
+    if 'combo' not in st.session_state:
+        st.session_state.combo = ""
 
     # Créer une disposition en 2 colonnes
     col1, col2 = st.columns([1, 3])  # 1 partie pour les boutons, 3 parties pour le tableau
@@ -94,7 +94,7 @@ def main():
 
     # Filtrer par nom de joueur
     if st.session_state.joueur:
-        df_filtered = df_filtered[df_filtered['joueur'].str.contains(st.session_state.joueur, case=False, na=False)]
+        df_filtered = df_filtered[df_filtered['combo'].str.contains(st.session_state.joueur, case=False, na=False)]
 
     # Enlever la colonne d'index (numéro de ligne) et masquer l'index
     df_filtered = df_filtered.reset_index(drop=True)
