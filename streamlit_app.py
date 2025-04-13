@@ -30,7 +30,7 @@ def main():
         st.session_state.nb_joueurs = None
 
     if 'total_matches' not in st.session_state:
-        st.session_state.total_matches = (df['total_matches'].min(), df['total_matches'].max())
+        st.session_state.total_matches = (df['total_matchs'].min(), df['total_matchs'].max())
 
     if 'joueur' not in st.session_state:
         st.session_state.joueur = ""
@@ -61,8 +61,8 @@ def main():
     # Placer le slider pour le total de matches dans la deuxième colonne
     with col2:
         # Définir les valeurs minimales et maximales pour le slider du total de matches
-        min_total_matches = int(df['total_matches'].min())
-        max_total_matches = int(df['total_matches'].max())
+        min_total_matches = int(df['total_matchs'].min())
+        max_total_matches = int(df['total_matchs'].max())
 
         # Slider pour sélectionner une plage de total de matches
         selected_total_matches = st.slider(
@@ -88,8 +88,8 @@ def main():
 
     # Filtrer selon la plage de total de matches
     df_filtered = df_filtered[
-        (df_filtered['total_matches'] >= st.session_state.total_matches[0]) & 
-        (df_filtered['total_matches'] <= st.session_state.total_matches[1])
+        (df_filtered['total_matchs'] >= st.session_state.total_matches[0]) & 
+        (df_filtered['total_matchs'] <= st.session_state.total_matches[1])
     ]
 
     # Filtrer par nom de joueur
