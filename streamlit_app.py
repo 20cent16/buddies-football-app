@@ -103,9 +103,11 @@ def main():
     if st.session_state.combo:
         df_filtered = df_filtered[df_filtered['combo'].str.contains(st.session_state.combo, case=False, na=False)]
 
-    # Enlever la colonne d'index (numéro de ligne) et masquer l'index
-    df_filtered = df_filtered.reset_index(drop=True)
+    # Ajouter une colonne de classement dynamique
+    df_filtered['Classement'] = df_filtered['total_matchs'].rank(ascending=False, method='min')
 
+    # Réorganiser les colonnes pour que la colonne de classement soit en premier
+    df_filtered = df_filtered[['Classement'] + [col for col in df_filtered.columns if col != 'Classement']]
 
     # Afficher le titre avec une taille réduite, un ballon devant et centré
     st.markdown("<h3 style='text-align: center;'>⚽ Résultats par combinaison de joueurs</h3>", unsafe_allow_html=True)
