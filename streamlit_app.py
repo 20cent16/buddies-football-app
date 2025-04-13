@@ -59,10 +59,13 @@ def main():
         if button_5:
             st.session_state.nb_joueurs = 5
 
-    # Placer le slider pour le total de matchs et le champ de texte pour filtrer par combo en dessous
-    col1, col2 = st.columns([3, 1])  # 3 parties pour le tableau, 1 pour le champ de filtre
+    # Ajouter un espace ici pour séparer les boutons du reste de la page
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    with col2:
+    # Placer le slider et le champ de texte pour le combo en dessous des boutons, mais au-dessus du tableau
+    slider_col, combo_col = st.columns([3, 1])  # 3 parties pour le slider, 1 pour le champ de texte
+
+    with slider_col:
         # Définir les valeurs minimales et maximales pour le slider du total de matchs
         min_total_matchs = int(df['total_matchs'].min())
         max_total_matchs = int(df['total_matchs'].max())
@@ -78,6 +81,7 @@ def main():
         # Enregistrer la plage sélectionnée dans session_state
         st.session_state.total_matchs = selected_total_matchs
 
+    with combo_col:
         # Champ de texte pour filtrer par combinaison (combo)
         combo_input = st.text_input("Filtrer par combinaison (combo)", "")
         st.session_state.combo = combo_input
