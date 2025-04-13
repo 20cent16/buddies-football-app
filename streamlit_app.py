@@ -106,8 +106,9 @@ def main():
     # Enlever la colonne d'index (numéro de ligne) et masquer l'index
     df_filtered = df_filtered.reset_index(drop=True)
 
-    # Afficher le DataFrame filtré sans la colonne d'index
-    st.title("Résultats par combinaison, total de matchs et combo")
+
+    # Afficher le titre avec une taille réduite, un ballon devant et centré
+    st.markdown("<h3 style='text-align: center;'>⚽ Résultats par combinaison de joueurs</h3>", unsafe_allow_html=True)
     st.dataframe(df_filtered, use_container_width=True, hide_index=True)
 
     # Fermer la connexion
