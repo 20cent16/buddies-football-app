@@ -27,7 +27,7 @@ def main():
 
    # Initialiser les variables dans le session_state si ce n'est pas déjà fait
     if 'nb_joueurs' not in st.session_state:
-        st.session_state.nb_joueurs = None
+        st.session_state.nb_joueurs = []
 
     if 'total_matchs' not in st.session_state:
         st.session_state.total_matchs = (df['total_matchs'].min(), df['total_matchs'].max())
@@ -35,34 +35,53 @@ def main():
     if 'combo' not in st.session_state:
         st.session_state.combo = ""
 
-    # Placer les 5 boutons côte à côte au-dessus du tableau
+    # Placer les cases à cocher côte à côte au-dessus du tableau
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        button_1 = st.button("1 joueur")
-        if button_1:
-            st.session_state.nb_joueurs = 1
-    with col2:
-        button_2 = st.button("2 joueurs")
-        if button_2:
-            st.session_state.nb_joueurs = 2
-    with col3:
-        button_3 = st.button("3 joueurs")
-        if button_3:
-            st.session_state.nb_joueurs = 3
-    with col4:
-        button_4 = st.button("4 joueurs")
-        if button_4:
-            st.session_state.nb_joueurs = 4
-    with col5:
-        button_5 = st.button("5 joueurs")
-        if button_5:
-            st.session_state.nb_joueurs = 5
+        checkbox_1 = st.checkbox("1 joueur")
+        if checkbox_1:
+            st.session_state.nb_joueurs.append(1)
+        else:
+            if 1 in st.session_state.nb_joueurs:
+                st.session_state.nb_joueurs.remove(1)
 
-    # Ajouter un espace ici pour séparer les boutons du reste de la page
+    with col2:
+        checkbox_2 = st.checkbox("2 joueurs")
+        if checkbox_2:
+            st.session_state.nb_joueurs.append(2)
+        else:
+            if 2 in st.session_state.nb_joueurs:
+                st.session_state.nb_joueurs.remove(2)
+
+    with col3:
+        checkbox_3 = st.checkbox("3 joueurs")
+        if checkbox_3:
+            st.session_state.nb_joueurs.append(3)
+        else:
+            if 3 in st.session_state.nb_joueurs:
+                st.session_state.nb_joueurs.remove(3)
+
+    with col4:
+        checkbox_4 = st.checkbox("4 joueurs")
+        if checkbox_4:
+            st.session_state.nb_joueurs.append(4)
+        else:
+            if 4 in st.session_state.nb_joueurs:
+                st.session_state.nb_joueurs.remove(4)
+
+    with col5:
+        checkbox_5 = st.checkbox("5 joueurs")
+        if checkbox_5:
+            st.session_state.nb_joueurs.append(5)
+        else:
+            if 5 in st.session_state.nb_joueurs:
+                st.session_state.nb_joueurs.remove(5)
+
+    # Ajouter un espace ici pour séparer les cases à cocher du reste de la page
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Placer le slider et le champ de texte pour le combo en dessous des boutons, mais au-dessus du tableau
+    # Placer le slider et le champ de texte pour le combo en dessous des cases à cocher
     slider_col, combo_col = st.columns([3, 1])  # 3 parties pour le slider, 1 pour le champ de texte
 
     with slider_col:
@@ -83,15 +102,15 @@ def main():
 
     with combo_col:
         # Champ de texte pour filtrer par combinaison (combo)
-        combo_input = st.text_input("Filtrer par combinaison de joueurs", "")
+        combo_input = st.text_input("Filtrer par combinaison (combo)", "")
         st.session_state.combo = combo_input
 
     # Appliquer les filtres basés sur l'état de session
     df_filtered = df.copy()
 
-    # Filtrer selon le nombre de joueurs
-    if st.session_state.nb_joueurs is not None:
-        df_filtered = df_filtered[df_filtered['nb_joueurs'] == st.session_state.nb_joueurs]
+    # Filtrer selon le nombre de joueurs sélectionnés
+    if st.session_state.nb_joueurs:
+        df_filtered = df_filtered[df_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
 
     # Filtrer selon la plage de total de matchs
     df_filtered = df_filtered[
@@ -103,8 +122,19 @@ def main():
     if st.session_state.combo:
         df_filtered = df_filtered[df_filtered['combo'].str.contains(st.session_state.combo, case=False, na=False)]
 
+    # Enlever la colonne d'index (numéro de ligne) et masquer l'index
+    df_filtered = df_filtered.reset_index(drop=True)
+
+    # Ajouter une colonne de classement dynamique
+    df_filtered['Classement'] = df_filtered['total_matchs'].rank(ascending=False, method='min')
+
+    # Réorganiser les colonnes pour que la colonne de classement soit en premier
+    df_filtered = df_filtered[['Classement'] + [col for col in df_filtered.columns if col != 'Classement']]
+
     # Afficher le titre avec une taille réduite, un ballon devant et centré
-    st.markdown("<h3 style='text-align: center;'>⚽ Résultats par combinaison de joueurs</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>⚽ Résultats par combinaison, total de matchs et combo</h3>", unsafe_allow_html=True)
+
+    # Afficher le DataFrame filtré et permettre le tri par les colonnes
     st.dataframe(df_filtered, use_container_width=True, hide_index=True)
 
     # Fermer la connexion
