@@ -93,7 +93,7 @@ def main():
     ]
 
     # Filtrer par nom de joueur
-    if st.session_state.joueur:
+    if st.session_state.combo:
         df_filtered = df_filtered[df_filtered['combo'].str.contains(st.session_state.combo, case=False, na=False)]
 
     # Enlever la colonne d'index (numéro de ligne) et masquer l'index
