@@ -83,7 +83,7 @@ def main():
 
     with combo_col:
         # Champ de texte pour filtrer par combinaison (combo)
-        combo_input = st.text_input("Filtrer par combinaison (combo)", "")
+        combo_input = st.text_input("Filtrer par combinaison de joueurs", "")
         st.session_state.combo = combo_input
 
     # Appliquer les filtres basés sur l'état de session
