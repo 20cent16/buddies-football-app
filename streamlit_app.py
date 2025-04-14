@@ -35,48 +35,15 @@ def main():
     if 'combo' not in st.session_state:
         st.session_state.combo = ""
 
-    # Placer les cases à cocher côte à côte au-dessus du tableau
-    col1, col2, col3, col4, col5 = st.columns(5)
-
-    with col1:
-        checkbox_1 = st.checkbox("1 joueur")
-        if checkbox_1:
-            st.session_state.nb_joueurs.append(1)
-        else:
-            if 1 in st.session_state.nb_joueurs:
-                st.session_state.nb_joueurs.remove(1)
-
-    with col2:
-        checkbox_2 = st.checkbox("2 joueurs")
-        if checkbox_2:
-            st.session_state.nb_joueurs.append(2)
-        else:
-            if 2 in st.session_state.nb_joueurs:
-                st.session_state.nb_joueurs.remove(2)
-
-    with col3:
-        checkbox_3 = st.checkbox("3 joueurs")
-        if checkbox_3:
-            st.session_state.nb_joueurs.append(3)
-        else:
-            if 3 in st.session_state.nb_joueurs:
-                st.session_state.nb_joueurs.remove(3)
-
-    with col4:
-        checkbox_4 = st.checkbox("4 joueurs")
-        if checkbox_4:
-            st.session_state.nb_joueurs.append(4)
-        else:
-            if 4 in st.session_state.nb_joueurs:
-                st.session_state.nb_joueurs.remove(4)
-
-    with col5:
-        checkbox_5 = st.checkbox("5 joueurs")
-        if checkbox_5:
-            st.session_state.nb_joueurs.append(5)
-        else:
-            if 5 in st.session_state.nb_joueurs:
-                st.session_state.nb_joueurs.remove(5)
+    # Liste déroulante multichoix pour sélectionner le nombre de joueurs
+    options_joueurs = [1, 2, 3, 4, 5]
+    nb_joueurs_selectionnes = st.multiselect(
+        "Sélectionnez le(s) nombre(s) de joueurs :", 
+        options=options_joueurs, 
+        default=options_joueurs
+    )
+    st.session_state.nb_joueurs = nb_joueurs_selectionnes
+      
 
     # Ajouter un espace ici pour séparer les cases à cocher du reste de la page
     st.markdown("<br>", unsafe_allow_html=True)
