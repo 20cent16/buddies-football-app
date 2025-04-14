@@ -81,7 +81,7 @@ def main():
     df_filtered = df_filtered.reset_index(drop=True)
 
     # Tri rapide
-    sort_option = st.radio("Trier par :", ["victoire", "taux_victoire"], horizontal=True)
+    sort_option = st.radio("Trier par :", ["victoires", "tx_victoires"], horizontal=True)
     df_filtered = df_filtered.sort_values(by=sort_option, ascending=False)
 
     # Titre
