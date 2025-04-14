@@ -126,7 +126,7 @@ def main():
     df_filtered = df_filtered.reset_index(drop=True)
 
     # Afficher le titre avec une taille réduite, un ballon devant et centré
-    st.markdown("<h3 style='text-align: center;'>⚽ Résultats par combinaison, total de matchs et combo</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>⚽ Résultats par combinaison</h3>", unsafe_allow_html=True)
 
     # Afficher le DataFrame filtré et permettre le tri par les colonnes
     st.dataframe(df_filtered, use_container_width=True, hide_index=True)
