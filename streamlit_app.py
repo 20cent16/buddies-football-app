@@ -29,8 +29,8 @@ def main():
     if 'nb_joueurs' not in st.session_state:
         st.session_state.nb_joueurs = []
 
-    if 'total_matchs' not in st.session_state:
-        st.session_state.total_matchs = (df['total_matchs'].min(), df['total_matchs'].max())
+    if 'matches' not in st.session_state:
+        st.session_state.matches = (df['matches'].min(), df['matches'].max())
 
     if 'combo' not in st.session_state:
         st.session_state.combo = ""
@@ -86,19 +86,19 @@ def main():
 
     with slider_col:
         # Définir les valeurs minimales et maximales pour le slider du total de matchs
-        min_total_matchs = int(df['total_matchs'].min())
-        max_total_matchs = int(df['total_matchs'].max())
+        min_matches = int(df['matches'].min())
+        max_matches = int(df['matches'].max())
 
         # Slider pour sélectionner une plage de total de matchs
-        selected_total_matchs = st.slider(
+        selected_matches = st.slider(
             "Sélectionnez le nombre de matches minimum ou maximum", 
-            min_value=min_total_matchs, 
-            max_value=max_total_matchs, 
-            value=st.session_state.total_matchs
+            min_value=min_matches, 
+            max_value=max_matches, 
+            value=st.session_state.matches
         )
         
         # Enregistrer la plage sélectionnée dans session_state
-        st.session_state.total_matchs = selected_total_matchs
+        st.session_state.matches = selected_matches
 
     with combo_col:
         # Champ de texte pour filtrer par combinaison (combo)
@@ -114,8 +114,8 @@ def main():
 
     # Filtrer selon la plage de total de matchs
     df_filtered = df_filtered[
-        (df_filtered['total_matchs'] >= st.session_state.total_matchs[0]) & 
-        (df_filtered['total_matchs'] <= st.session_state.total_matchs[1])
+        (df_filtered['matches'] >= st.session_state.matches[0]) & 
+        (df_filtered['matches'] <= st.session_state.matches[1])
     ]
 
     # Filtrer par combinaison (combo)
