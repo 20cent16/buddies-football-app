@@ -91,7 +91,7 @@ def main():
 
         # Slider pour sélectionner une plage de total de matchs
         selected_total_matchs = st.slider(
-            "Sélectionnez une plage de total de matchs", 
+            "Sélectionnez le nombre de matches minimum ou maximum", 
             min_value=min_total_matchs, 
             max_value=max_total_matchs, 
             value=st.session_state.total_matchs
@@ -102,7 +102,7 @@ def main():
 
     with combo_col:
         # Champ de texte pour filtrer par combinaison (combo)
-        combo_input = st.text_input("Filtrer par combinaison (combo)", "")
+        combo_input = st.text_input("Filtrer par combinaison", "")
         st.session_state.combo = combo_input
 
     # Appliquer les filtres basés sur l'état de session
