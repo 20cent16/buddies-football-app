@@ -14,7 +14,7 @@ def main():
     )
 
     # Récupération des données
-    query_sql = 'SELECT * FROM public.combo_stats ORDER BY victoire DESC'
+    query_sql = 'SELECT * FROM public.combo_stats ORDER BY victoires DESC'
     cur = conn.cursor()
     cur.execute(query_sql)
     rows = cur.fetchall()
