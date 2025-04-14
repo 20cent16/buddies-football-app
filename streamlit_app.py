@@ -55,20 +55,12 @@ def main():
         st.session_state.total_matchs = selected_total_matchs
 
     with combo_col:
-        # Champ de recherche rapide pour filtrer les combos
-        search_term = st.text_input("Rechercher une combinaison", "")
-
         combo_options = sorted(df['combo'].dropna().unique())
-
-        # Si un terme de recherche est fourni, on filtre les combos
-        if search_term:
-            combo_options = [combo for combo in combo_options if search_term.lower() in combo.lower()]
-
         selected_combos = st.multiselect(
             "Filtrer par combinaison",
             combo_options,
             default=[],
-            help="Sélectionnez une ou plusieurs combinaisons spécifiques à afficher"
+            help="Laissez vide pour tout afficher"
         )
         st.session_state.combo = selected_combos
 
@@ -83,7 +75,7 @@ def main():
         (df_filtered['total_matchs'] <= st.session_state.total_matchs[1])
     ]
 
-    if st.session_state.combo:  # si un ou plusieurs combos sont sélectionnés
+    if st.session_state.combo:
         df_filtered = df_filtered[df_filtered['combo'].isin(st.session_state.combo)]
 
     df_filtered = df_filtered.reset_index(drop=True)
@@ -123,7 +115,6 @@ def main():
     else:
         st.info("Aucune donnée à afficher pour ce filtre.")
 
-    # Fermeture connexion
     cur.close()
     conn.close()
 
