@@ -25,8 +25,8 @@ def main():
     if 'nb_joueurs' not in st.session_state:
         st.session_state.nb_joueurs = []
 
-    if 'total_matchs' not in st.session_state:
-        st.session_state.total_matchs = (df['total_matchs'].min(), df['total_matchs'].max())
+    if 'matches' not in st.session_state:
+        st.session_state.matches = (df['matches'].min(), df['matches'].max())
 
     if 'combo' not in st.session_state:
         st.session_state.combo = []
@@ -44,15 +44,15 @@ def main():
     slider_col, combo_col = st.columns([3, 1])
 
     with slider_col:
-        min_total_matchs = int(df['total_matchs'].min())
-        max_total_matchs = int(df['total_matchs'].max())
-        selected_total_matchs = st.slider(
+        min_matches = int(df['matches'].min())
+        max_matches = int(df['matches'].max())
+        selected_matches = st.slider(
             "Sélectionnez le nombre de matches minimum ou maximum", 
-            min_value=min_total_matchs, 
-            max_value=max_total_matchs, 
-            value=st.session_state.total_matchs
+            min_value=min_matches, 
+            max_value=max_matches, 
+            value=st.session_state.matches
         )
-        st.session_state.total_matchs = selected_total_matchs
+        st.session_state.matches = selected_matches
 
     with combo_col:
         combo_options = sorted(df['combo'].dropna().unique())
@@ -71,8 +71,8 @@ def main():
         df_filtered = df_filtered[df_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
 
     df_filtered = df_filtered[
-        (df_filtered['total_matchs'] >= st.session_state.total_matchs[0]) & 
-        (df_filtered['total_matchs'] <= st.session_state.total_matchs[1])
+        (df_filtered['matches'] >= st.session_state.matches[0]) & 
+        (df_filtered['matches'] <= st.session_state.matches[1])
     ]
 
     if st.session_state.combo:
@@ -103,11 +103,11 @@ def main():
     st.markdown("### Visualisation des combos (victoires)")
     if not df_filtered.empty:
         fig = px.bar(
-            df_filtered.sort_values(by="victoire", ascending=False).head(20),
+            df_filtered.sort_values(by="victoires", ascending=False).head(20),
             x="combo",
-            y="victoire",
+            y="victoires",
             title="Top 20 des combos par nombre de victoires",
-            labels={"combo": "Combinaison", "victoire": "Nombre de victoires"},
+            labels={"combo": "Combinaison", "victoires": "Nombre de victoires"},
             text_auto=True
         )
         fig.update_layout(xaxis_tickangle=-45)
