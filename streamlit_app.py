@@ -55,12 +55,26 @@ def main():
         st.session_state.total_matchs = selected_total_matchs
 
     with combo_col:
+        # Champ de recherche rapide pour filtrer les combos
+        search_term = st.text_input("Rechercher une combinaison", "")
+
         combo_options = sorted(df['combo'].dropna().unique())
-        selected_combos = st.multiselect("Filtrer par combinaison", combo_options, default=combo_options)
+
+        # Si un terme de recherche est fourni, on filtre les combos
+        if search_term:
+            combo_options = [combo for combo in combo_options if search_term.lower() in combo.lower()]
+
+        selected_combos = st.multiselect(
+            "Filtrer par combinaison",
+            combo_options,
+            default=[],
+            help="Sélectionnez une ou plusieurs combinaisons spécifiques à afficher"
+        )
         st.session_state.combo = selected_combos
 
     # Application des filtres
     df_filtered = df.copy()
+
     if st.session_state.nb_joueurs:
         df_filtered = df_filtered[df_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
 
@@ -69,7 +83,7 @@ def main():
         (df_filtered['total_matchs'] <= st.session_state.total_matchs[1])
     ]
 
-    if st.session_state.combo:
+    if st.session_state.combo:  # si un ou plusieurs combos sont sélectionnés
         df_filtered = df_filtered[df_filtered['combo'].isin(st.session_state.combo)]
 
     df_filtered = df_filtered.reset_index(drop=True)
@@ -95,16 +109,19 @@ def main():
 
     # Graphique interactif
     st.markdown("### Visualisation des combos (victoires)")
-    fig = px.bar(
-        df_filtered.sort_values(by="victoire", ascending=False).head(20),
-        x="combo",
-        y="victoire",
-        title="Top 20 des combos par nombre de victoires",
-        labels={"combo": "Combinaison", "victoire": "Nombre de victoires"},
-        text_auto=True
-    )
-    fig.update_layout(xaxis_tickangle=-45)
-    st.plotly_chart(fig, use_container_width=True)
+    if not df_filtered.empty:
+        fig = px.bar(
+            df_filtered.sort_values(by="victoire", ascending=False).head(20),
+            x="combo",
+            y="victoire",
+            title="Top 20 des combos par nombre de victoires",
+            labels={"combo": "Combinaison", "victoire": "Nombre de victoires"},
+            text_auto=True
+        )
+        fig.update_layout(xaxis_tickangle=-45)
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("Aucune donnée à afficher pour ce filtre.")
 
     # Fermeture connexion
     cur.close()
