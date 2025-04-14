@@ -10,7 +10,7 @@ def main():
 
     conn = psycopg2.connect('postgres://'+st.secrets["DB_USERNAME"]+':'+st.secrets["DB_PASSWORD"]+'@'+st.secrets["DB_HOST"]+':21552/buddies?sslmode=require')
         # Requête SQL pour récupérer les données
-    query_sql = 'SELECT * FROM public.combo_stats'
+    query_sql = 'SELECT * FROM public.combo_stats ORDER BY victoire DESC'
 
     # Exécution de la requête
     cur = conn.cursor()
