@@ -149,6 +149,18 @@ def main():
         valeur_texte = "Oui" if filtre_en_cours == "Oui" else "Non"
         df_series_filtered = df_series_filtered[df_series_filtered['en_cours'] == valeur_texte]
 
+    filtre_type_serie = st.radio(
+        "Type de série à afficher :",
+        options=["Toutes", "Séries de victoires", "Séries de défaites"],
+        horizontal=True
+    )
+
+    if filtre_type_serie != "Toutes":
+        if filtre_type_serie == "Séries de victoires":
+            df_series_filtered = df_series_filtered[df_series_filtered['victoires'] > df_series_filtered['defaites']]
+        else:
+            df_series_filtered = df_series_filtered[df_series_filtered['victoires'] < df_series_filtered['defaites']]
+
     # Affichage du tableau filtré
     st.dataframe(df_series_filtered, hide_index=True)
 
