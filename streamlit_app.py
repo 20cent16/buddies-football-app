@@ -42,6 +42,9 @@ def main():
     if 'combo' not in st.session_state:
         st.session_state.combo = []
 
+    # Titre
+    st.markdown("⚽ Résultats par combinaison")
+
     # Filtres utilisateurs
     options_joueurs = [1, 2, 3, 4, 5]
     nb_joueurs_selectionnes = st.multiselect(
@@ -95,9 +98,6 @@ def main():
     sort_option = st.radio("Trier par :", ["victoires", "tx_victoires"], horizontal=True)
     df_filtered = df_filtered.sort_values(by=sort_option, ascending=False)
 
-    # Titre
-    st.markdown("<h3 style='text-align: center;'>⚽ Résultats par combinaison</h3>", unsafe_allow_html=True)
-
     # Tableau
     st.dataframe(df_filtered, use_container_width=True, hide_index=True)
 
@@ -109,22 +109,6 @@ def main():
         file_name='resultats_filtres.csv',
         mime='text/csv'
     )
-
-    # Graphique interactif
-    st.markdown("### Visualisation des combos (victoires)")
-    if not df_filtered.empty:
-        fig = px.bar(
-            df_filtered.sort_values(by="victoires", ascending=False).head(20),
-            x="combo",
-            y="victoires",
-            title="Top 20 des combos par nombre de victoires",
-            labels={"combo": "Combinaison", "victoires": "Nombre de victoires"},
-            text_auto=True
-        )
-        fig.update_layout(xaxis_tickangle=-45)
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        st.info("Aucune donnée à afficher pour ce filtre.")
 
     # 👉 Application des filtres à df_series
     df_series_filtered = df_series.copy()
@@ -153,7 +137,7 @@ def main():
     "Type de série à afficher :",
     options=["Toutes", "Séries de victoires", "Séries de défaites"],
     horizontal=True
-)
+    )
 
     if filtre_type_serie != "Toutes":
         if filtre_type_serie == "Séries de victoires":
