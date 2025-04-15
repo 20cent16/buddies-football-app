@@ -146,12 +146,11 @@ def main():
 
     # 🔍 Appliquer le filtre "en_cours"
     if filtre_en_cours != "Tous":
-        valeur_bool = True if filtre_en_cours == "Oui" else False
-        df_series_filtered = df_series_filtered[df_series_filtered['en_cours'] == valeur_bool]
+        valeur_texte = "Oui" if filtre_en_cours == "Oui" else "Non"
+        df_series_filtered = df_series_filtered[df_series_filtered['en_cours'] == valeur_texte]
 
     # Affichage du tableau filtré
     st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
-
 
     cur.close()
     conn.close()
