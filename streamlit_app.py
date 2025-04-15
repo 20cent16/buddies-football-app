@@ -43,7 +43,7 @@ def main():
         st.session_state.combo = []
 
     # Titre
-    st.markdown("⚽ Résultats par combinaison")
+    st.markdown("### ⚽ Résultats par combinaison")
 
     # Filtres utilisateurs
     options_joueurs = [1, 2, 3, 4, 5]
