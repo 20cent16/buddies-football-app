@@ -162,16 +162,14 @@ def main():
             df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'défaites']
 
     def highlight_victory_series(row):
-        if row['resultat'] == 'victoire' and row['nb_matches'] >= 5:
+        if row['resultat'] == 'victoires' and row['nb_matches'] >= 5:
             return ['background-color: #d4f7d4'] * len(row)
         return [''] * len(row)
 
     styled_df_series = df_series_filtered.style.apply(highlight_victory_series, axis=1)
 
-
     # Affichage du tableau filtré
     st.dataframe(styled_df_series, use_container_width=True, hide_index=True)
-
 
     cur.close()
     conn.close()
