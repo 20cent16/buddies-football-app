@@ -21,12 +21,16 @@ def main():
     colnames = [desc[0] for desc in cur.description]
     df = pd.DataFrame(rows, columns=colnames)
 
-    query_sql = 'SELECT * FROM public.series ORDER BY start_date'
+    query_sql = 'SELECT * FROM public.series ORDER BY debut'
     cur = conn.cursor()
     cur.execute(query_sql)
     rows = cur.fetchall()
     colnames = [desc[0] for desc in cur.description]
     df_series = pd.DataFrame(rows, columns=colnames)
+
+    # 👉 Conversion des timestamps en format date lisible
+df_series['debut'] = pd.to_datetime(df_series['debut']).dt.strftime('%d/%m/%Y')
+df_series['fin'] = pd.to_datetime(df_series['fin']).dt.strftime('%d/%m/%Y')
 
     # Initialiser les états
     if 'nb_joueurs' not in st.session_state:
