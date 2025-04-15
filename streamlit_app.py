@@ -21,7 +21,7 @@ def main():
     colnames = [desc[0] for desc in cur.description]
     df = pd.DataFrame(rows, columns=colnames)
 
-    query_sql = 'SELECT * FROM public.series ORDER BY game_date'
+    query_sql = 'SELECT * FROM public.series ORDER BY start_date'
     cur = conn.cursor()
     cur.execute(query_sql)
     rows = cur.fetchall()
