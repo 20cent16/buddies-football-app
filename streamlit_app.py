@@ -135,15 +135,6 @@ def main():
     if st.session_state.combo:
         df_series_filtered = df_series_filtered[df_series_filtered['combo'].isin(st.session_state.combo)]
 
-    # 🎛️ Filtre sur le nombre de joueurs pour les séries
-    options_joueurs_series = sorted(df_series['nb_joueurs'].dropna().unique())
-    nb_joueurs_series = st.multiselect(
-        "Filtrer les séries par nombre de joueurs :",
-        options=options_joueurs_series,
-        default=options_joueurs_series
-    )
-    df_series_filtered = df_series_filtered[df_series_filtered['nb_joueurs'].isin(nb_joueurs_series)]
-
     # 🎯 Filtre "en cours" juste avant l'affichage de df_series
     st.markdown("### 📅 Séries de matchs (filtrées)")
 
@@ -169,6 +160,15 @@ def main():
             df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'victoires']
         else:
             df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'défaites']
+
+    # 🎛️ Filtre sur le nombre de joueurs pour les séries
+    options_joueurs_series = sorted(df_series['nb_joueurs'].dropna().unique())
+    nb_joueurs_series = st.multiselect(
+        "Filtrer les séries par nombre de joueurs :",
+        options=options_joueurs_series,
+        default=options_joueurs_series
+    )
+    df_series_filtered = df_series_filtered[df_series_filtered['nb_joueurs'].isin(nb_joueurs_series)]
 
     # Affichage du tableau filtré
     st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
