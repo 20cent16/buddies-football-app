@@ -21,6 +21,13 @@ def main():
     colnames = [desc[0] for desc in cur.description]
     df = pd.DataFrame(rows, columns=colnames)
 
+    query_sql = 'SELECT * FROM public.series ORDER BY game_date'
+    cur = conn.cursor()
+    cur.execute(query_sql)
+    rows = cur.fetchall()
+    colnames = [desc[0] for desc in cur.description]
+    df_series = pd.DataFrame(rows, columns=colnames)
+
     # Initialiser les états
     if 'nb_joueurs' not in st.session_state:
         st.session_state.nb_joueurs = []
@@ -114,6 +121,19 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("Aucune donnée à afficher pour ce filtre.")
+
+    # 👉 Application des filtres à df_series
+    df_series_filtered = df_series.copy()
+
+    if 'nb_joueurs' in df_series.columns and st.session_state.nb_joueurs:
+        df_series_filtered = df_series_filtered[df_series_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
+
+    if st.session_state.combo:
+        df_series_filtered = df_series_filtered[df_series_filtered['combo'].isin(st.session_state.combo)]
+
+    # 👉 Affichage du tableau filtré des séries
+    st.markdown("### 📅 Séries de matchs")
+    st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
 
     cur.close()
     conn.close()
