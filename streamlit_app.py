@@ -120,7 +120,7 @@ def main():
         df_series_filtered = df_series_filtered[df_series_filtered['combo'].isin(st.session_state.combo)]
 
     # 🎯 Filtre "en cours" juste avant l'affichage de df_series
-    st.markdown("### 📅 Séries de matchs (filtrées)")
+    st.markdown("### 📅 Séries de matchs")
 
     filtre_en_cours = st.radio(
         "Afficher uniquement les séries en cours ?",
