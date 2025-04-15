@@ -150,7 +150,7 @@ def main():
         df_series_filtered = df_series_filtered[df_series_filtered['en_cours'] == valeur_texte]
 
     # Affichage du tableau filtré
-    st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
+    st.dataframe(df_series_filtered, hide_index=True)
 
     cur.close()
     conn.close()
