@@ -157,9 +157,9 @@ def main():
 
     if filtre_type_serie != "Toutes":
         if filtre_type_serie == "Séries de victoires":
-            df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'victoire']
+            df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'Victoires']
         else:
-            df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'défaite']
+            df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'Défaites']
 
     # Affichage du tableau filtré
     st.dataframe(df_series_filtered, hide_index=True)
