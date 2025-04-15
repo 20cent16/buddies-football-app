@@ -135,10 +135,12 @@ def main():
     if st.session_state.combo:
         df_series_filtered = df_series_filtered[df_series_filtered['combo'].isin(st.session_state.combo)]
 
-    # 🎯 Filtre sur le champ "en_cours" (Oui / Non)
+    # 🎯 Filtre "en cours" juste avant l'affichage de df_series
+    st.markdown("### 📅 Séries de matchs (filtrées)")
+
     filtre_en_cours = st.radio(
-        "Afficher uniquement les séries en cours ?", 
-        options=["Tous", "Oui", "Non"], 
+        "Afficher uniquement les séries en cours ?",
+        options=["Tous", "Oui", "Non"],
         horizontal=True
     )
 
@@ -147,10 +149,9 @@ def main():
         valeur_bool = True if filtre_en_cours == "Oui" else False
         df_series_filtered = df_series_filtered[df_series_filtered['en_cours'] == valeur_bool]
 
-
-    # 👉 Affichage du tableau filtré des séries
-    st.markdown("### 📅 Séries de matchs")
+    # Affichage du tableau filtré
     st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
+
 
     cur.close()
     conn.close()
