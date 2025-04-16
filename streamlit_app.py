@@ -201,19 +201,24 @@ def main():
         default=options_joueurs_opposant_confrontations
     )
 
+    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(nb_joueurs_opposant_confrontations)]
+
+
     # Nb Matches
     min_matches = int(df_confrontations['nb_matches'].min())
     max_matches = int(df_confrontations['nb_matches'].max())
-    slider_col_nb_matches=selected_matches = st.slider(
+    selected_nb_matches= st.slider(
             "Sélectionnez le nombre de matches minimum ou maximum", 
             min_value=min_matches, 
             max_value=max_matches, 
             value=st.session_state.matches
         )
-    st.session_state.matches = selected_matches
+    st.session_state.matches = selected_nb_matches
 
-    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(nb_joueurs_opposant_confrontations)]
-
+    df_confrontations_filtered = df_confrontations_filtered[
+        (df_confrontations_filtered['nb_matches'] >= st.session_state.matches[0]) & 
+        (df_confrontations_filtered['nb_matches'] <= st.session_state.matches[1])
+    ]
 
     # Affichage du tableau filtré
     st.dataframe(df_confrontations_filtered, hide_index=True)
