@@ -28,6 +28,13 @@ def main():
     colnames = [desc[0] for desc in cur.description]
     df_series = pd.DataFrame(rows, columns=colnames)
 
+    query_sql = 'SELECT * FROM public.combo_confrontations ORDER BY victoires DESC'
+    cur = conn.cursor()
+    cur.execute(query_sql)
+    rows = cur.fetchall()
+    colnames = [desc[0] for desc in cur.description]
+    df_confrontations = pd.DataFrame(rows, columns=colnames)
+
     # 👉 Conversion des timestamps en format date lisible
     df_series['debut'] = pd.to_datetime(df_series['debut']).dt.strftime('%d/%m/%Y')
     df_series['fin'] = pd.to_datetime(df_series['fin']).dt.strftime('%d/%m/%Y')
@@ -156,6 +163,32 @@ def main():
 
     # Affichage du tableau filtré
     st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
+
+
+
+ # 👉 Application des filtres à df_confrontations
+    df_confrontations_filtered = df_confrontations.copy()
+
+    if 'nb_joueurs' in df_confrontations.columns and st.session_state.nb_joueurs:
+        df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
+
+    if st.session_state.combo:
+        df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['combo'].isin(st.session_state.combo)]
+
+    # 🎯 Filtre "en cours" juste avant l'affichage de df_series
+    st.markdown("### 📅 Confrontations")
+
+    # 🎛️ Filtre sur le nombre de joueurs pour les séries
+    options_joueurs_confrontations = sorted(df_confrontations['nb_joueurs'].dropna().unique())
+    nb_joueurs_confrontations = st.multiselect(
+        "Filtrer les séries par nombre de joueurs :",
+        options=options_joueurs_confrontations,
+        default=options_joueurs_confrontations
+    )
+    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs'].isin(nb_joueurs_confrontations)]
+
+    # Affichage du tableau filtré
+    st.dataframe(df_confrontations_filtered, use_container_width=True, hide_index=True)
 
     cur.close()
     conn.close()
