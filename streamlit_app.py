@@ -202,16 +202,15 @@ def main():
     )
 
     # Nb Matches
-    with slider_col:
-        min_matches = int(df_confrontations['nb_matches'].min())
-        max_matches = int(df_confrontations['nb_matches'].max())
-        selected_matches = st.slider(
+    min_matches = int(df_confrontations['nb_matches'].min())
+    max_matches = int(df_confrontations['nb_matches'].max())
+    slider_col_nb_matches=selected_matches = st.slider(
             "Sélectionnez le nombre de matches minimum ou maximum", 
             min_value=min_matches, 
             max_value=max_matches, 
             value=st.session_state.matches
         )
-        st.session_state.matches = selected_matches
+    st.session_state.matches = selected_matches
 
     df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(nb_joueurs_opposant_confrontations)]
 
