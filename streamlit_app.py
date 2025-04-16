@@ -209,6 +209,8 @@ def main():
             help="Laissez vide pour tout afficher"
         )
     st.session_state.combo = selected_combos_confrontations
+
+    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['combo'].isin(st.session_state.combo)]
     
     # Nb Matches
     min_matches = int(df_confrontations['nb_matches'].min())
