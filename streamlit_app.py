@@ -181,7 +181,7 @@ def main():
         df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['combo'].isin(st.session_state.combo)]
 
     # 🎯 Filtre "en cours" juste avant l'affichage de df_confrontations
-    st.markdown("### ⚔️ Confrontations")
+    st.markdown("### ⚔️ Confrontations (NE PAS UTILISER, FAUX)")
 
     # 🎛️ Filtre sur le nombre de joueurs pour les confrontations
     options_joueurs_confrontations = sorted(df_confrontations['nb_joueurs'].dropna().unique())
