@@ -178,10 +178,10 @@ def main():
     # 🎯 Filtre "en cours" juste avant l'affichage de df_series
     st.markdown("### 📅 Confrontations")
 
-    # 🎛️ Filtre sur le nombre de joueurs pour les séries
+    # 🎛️ Filtre sur le nombre de joueurs pour les confrontations
     options_joueurs_confrontations = sorted(df_confrontations['nb_joueurs'].dropna().unique())
     nb_joueurs_confrontations = st.multiselect(
-        "Filtrer les séries par nombre de joueurs :",
+        "Filtrer les confrontations par nombre de joueurs :",
         options=options_joueurs_confrontations,
         default=options_joueurs_confrontations
     )
