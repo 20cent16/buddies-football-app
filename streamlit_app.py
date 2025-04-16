@@ -200,7 +200,7 @@ def main():
         options=options_joueurs_opposant_confrontations,
         default=options_joueurs_opposant_confrontations
     )
-    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs'].isin(nb_joueurs_opposant_confrontations)]
+    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(nb_joueurs_opposant_confrontations)]
 
 
     # Affichage du tableau filtré
