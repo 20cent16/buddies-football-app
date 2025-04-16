@@ -172,10 +172,13 @@ def main():
     if 'nb_joueurs' in df_confrontations.columns and st.session_state.nb_joueurs:
         df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
 
+    if 'nb_joueurs_opposant' in df_confrontations.columns and st.session_state.nb_joueurs_opposant:
+        df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(st.session_state.nb_joueurs_opposant)]
+
     if st.session_state.combo:
         df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['combo'].isin(st.session_state.combo)]
 
-    # 🎯 Filtre "en cours" juste avant l'affichage de df_series
+    # 🎯 Filtre "en cours" juste avant l'affichage de df_confrontations
     st.markdown("### 📅 Confrontations")
 
     # 🎛️ Filtre sur le nombre de joueurs pour les confrontations
@@ -187,8 +190,18 @@ def main():
     )
     df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs'].isin(nb_joueurs_confrontations)]
 
+    # 🎛️ Filtre sur le nombre de joueurs opposant pour les confrontations
+    options_joueurs_opposant_confrontations = sorted(df_confrontations['nb_joueurs_opposant'].dropna().unique())
+    nb_joueurs_opposant_confrontations = st.multiselect(
+        "Filtrer les confrontations par nombre de joueurs opposant :",
+        options=options_joueurs_opposant_confrontations,
+        default=options_joueurs_opposant_confrontations
+    )
+    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs'].isin(nb_joueurs_opposant_confrontations)]
+
+
     # Affichage du tableau filtré
-    st.dataframe(df_confrontations_filtered, use_container_width=True, hide_index=True)
+    st.dataframe(df_confrontations_filtered, hide_index=True)
 
     cur.close()
     conn.close()
