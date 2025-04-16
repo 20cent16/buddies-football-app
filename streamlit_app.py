@@ -64,8 +64,7 @@ def main():
     )
     st.session_state.nb_joueurs = nb_joueurs_selectionnes
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    slider_col, combo_col = st.columns([3, 1])
+    combo_col, slider_col = st.columns([1, 3])
 
     with slider_col:
         min_matches = int(df['matches'].min())
@@ -203,7 +202,14 @@ def main():
 
     df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(nb_joueurs_opposant_confrontations)]
 
-
+    selected_combos = st.multiselect(
+            "Filtrer par combinaison",
+            combo_options,
+            default=[],
+            help="Laissez vide pour tout afficher"
+        )
+    st.session_state.combo = selected_combos
+    
     # Nb Matches
     min_matches = int(df_confrontations['nb_matches'].min())
     max_matches = int(df_confrontations['nb_matches'].max())
