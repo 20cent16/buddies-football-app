@@ -43,6 +43,9 @@ def main():
     if 'nb_joueurs' not in st.session_state:
         st.session_state.nb_joueurs = []
 
+    if 'nb_joueurs_opposant' not in st.session_state:
+        st.session_state.nb_joueurs_opposant = []
+
     if 'matches' not in st.session_state:
         st.session_state.matches = (df['matches'].min(), df['matches'].max())
 
