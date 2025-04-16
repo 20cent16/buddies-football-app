@@ -203,7 +203,7 @@ def main():
     df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(nb_joueurs_opposant_confrontations)]
 
     selected_combos_confrontations = st.multiselect(
-            "Filtrer par combinaison",
+            "Filtrer confrontations par combinaison",
             combo_options,
             default=[],
             help="Laissez vide pour tout afficher"
