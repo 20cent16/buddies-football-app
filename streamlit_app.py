@@ -1,68 +1,47 @@
 import streamlit as st
 import psycopg2
 import pandas as pd
-import plotly.express as px
+
+
+# 📦 Chargement des données avec cache
+@st.cache_data(ttl=600)
+def load_data(query):
+    with psycopg2.connect(
+        'postgres://' + st.secrets["DB_USERNAME"] + ':' + st.secrets["DB_PASSWORD"] +
+        '@' + st.secrets["DB_HOST"] + ':21552/buddies?sslmode=require'
+    ) as conn:
+        df = pd.read_sql_query(query, conn)
+    return df
 
 
 def main():
     st.set_page_config(page_title="Tableau interactif", layout="wide")
 
-    # Connexion à la base de données
-    conn = psycopg2.connect(
-        'postgres://' + st.secrets["DB_USERNAME"] + ':' + st.secrets["DB_PASSWORD"] +
-        '@' + st.secrets["DB_HOST"] + ':21552/buddies?sslmode=require'
-    )
+    # 🔄 Chargement des données
+    df = load_data('SELECT * FROM public.combo_stats ORDER BY victoires DESC')
+    df_series = load_data('SELECT * FROM public.series ORDER BY debut')
+    df_confrontations = load_data('SELECT * FROM public.combo_confrontations ORDER BY victoires DESC')
 
-    # Récupération des données
-    query_sql = 'SELECT * FROM public.combo_stats ORDER BY victoires DESC'
-    cur = conn.cursor()
-    cur.execute(query_sql)
-    rows = cur.fetchall()
-    colnames = [desc[0] for desc in cur.description]
-    df = pd.DataFrame(rows, columns=colnames)
+    # 🔧 Optimisation des types
+    for col in ['nb_joueurs', 'nb_joueurs_opposant', 'nb_matches']:
+        if col in df_confrontations.columns:
+            df_confrontations[col] = pd.to_numeric(df_confrontations[col], errors='coerce').astype('Int16')
 
-    query_sql = 'SELECT * FROM public.series ORDER BY debut'
-    cur = conn.cursor()
-    cur.execute(query_sql)
-    rows = cur.fetchall()
-    colnames = [desc[0] for desc in cur.description]
-    df_series = pd.DataFrame(rows, columns=colnames)
-
-    query_sql = 'SELECT * FROM public.combo_confrontations ORDER BY victoires DESC'
-    cur = conn.cursor()
-    cur.execute(query_sql)
-    rows = cur.fetchall()
-    colnames = [desc[0] for desc in cur.description]
-    df_confrontations = pd.DataFrame(rows, columns=colnames)
-
-    # 👉 Conversion des timestamps en format date lisible
     df_series['debut'] = pd.to_datetime(df_series['debut']).dt.strftime('%d/%m/%Y')
     df_series['fin'] = pd.to_datetime(df_series['fin']).dt.strftime('%d/%m/%Y')
 
-    # Initialiser les états
-    if 'nb_joueurs' not in st.session_state:
-        st.session_state.nb_joueurs = []
-
-    if 'nb_joueurs_opposant' not in st.session_state:
-        st.session_state.nb_joueurs_opposant = []
-
+    # Initialisation des états
     if 'matches' not in st.session_state:
         st.session_state.matches = (df['matches'].min(), df['matches'].max())
 
-    if 'combo' not in st.session_state:
-        st.session_state.combo = []
-
-    # Titre
     st.markdown("### ⚽ Résultats par combinaison")
 
-    # Filtres utilisateurs
     options_joueurs = [1, 2, 3, 4, 5]
     nb_joueurs_selectionnes = st.multiselect(
-        "Sélectionnez le(s) nombre(s) de joueurs :", 
-        options=options_joueurs, 
+        "Sélectionnez le(s) nombre(s) de joueurs :",
+        options=options_joueurs,
         default=options_joueurs
     )
-    st.session_state.nb_joueurs = nb_joueurs_selectionnes
 
     combo_col, slider_col = st.columns([1, 3])
 
@@ -70,9 +49,9 @@ def main():
         min_matches = int(df['matches'].min())
         max_matches = int(df['matches'].max())
         selected_matches = st.slider(
-            "Sélectionnez le nombre de matches minimum ou maximum", 
-            min_value=min_matches, 
-            max_value=max_matches, 
+            "Sélectionnez le nombre de matches minimum ou maximum",
+            min_value=min_matches,
+            max_value=max_matches,
             value=st.session_state.matches
         )
         st.session_state.matches = selected_matches
@@ -85,32 +64,23 @@ def main():
             default=[],
             help="Laissez vide pour tout afficher"
         )
-        st.session_state.combo = selected_combos
 
-    # Application des filtres
+    # Filtrage des résultats
     df_filtered = df.copy()
-
-    if st.session_state.nb_joueurs:
-        df_filtered = df_filtered[df_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
-
+    df_filtered = df_filtered[df_filtered['nb_joueurs'].isin(nb_joueurs_selectionnes)]
     df_filtered = df_filtered[
-        (df_filtered['matches'] >= st.session_state.matches[0]) & 
-        (df_filtered['matches'] <= st.session_state.matches[1])
+        (df_filtered['matches'] >= selected_matches[0]) &
+        (df_filtered['matches'] <= selected_matches[1])
     ]
-
-    if st.session_state.combo:
-        df_filtered = df_filtered[df_filtered['combo'].isin(st.session_state.combo)]
-
+    if selected_combos:
+        df_filtered = df_filtered[df_filtered['combo'].isin(selected_combos)]
     df_filtered = df_filtered.reset_index(drop=True)
 
-    # Tri rapide
     sort_option = st.radio("Trier par :", ["victoires", "tx_victoires"], horizontal=True)
     df_filtered = df_filtered.sort_values(by=sort_option, ascending=False)
 
-    # Tableau
     st.dataframe(df_filtered, use_container_width=True, hide_index=True)
 
-    # Export CSV
     csv = df_filtered.to_csv(index=False).encode('utf-8')
     st.download_button(
         label="Télécharger les données filtrées (CSV)",
@@ -119,42 +89,33 @@ def main():
         mime='text/csv'
     )
 
-    # 👉 Application des filtres à df_series
-    df_series_filtered = df_series.copy()
-
-    if 'nb_joueurs' in df_series.columns and st.session_state.nb_joueurs:
-        df_series_filtered = df_series_filtered[df_series_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
-
-    if st.session_state.combo:
-        df_series_filtered = df_series_filtered[df_series_filtered['combo'].isin(st.session_state.combo)]
-
-    # 🎯 Filtre "en cours" juste avant l'affichage de df_series
+    # 🎯 Séries de matchs
     st.markdown("### 📅 Séries de matchs")
+
+    df_series_filtered = df_series.copy()
+    if 'nb_joueurs' in df_series.columns:
+        df_series_filtered = df_series_filtered[df_series_filtered['nb_joueurs'].isin(nb_joueurs_selectionnes)]
+
+    if selected_combos:
+        df_series_filtered = df_series_filtered[df_series_filtered['combo'].isin(selected_combos)]
 
     filtre_en_cours = st.radio(
         "Afficher uniquement les séries en cours ?",
         options=["Tous", "Oui", "Non"],
         horizontal=True
     )
-
-    # 🔍 Appliquer le filtre "en_cours"
     if filtre_en_cours != "Tous":
-        valeur_texte = "Oui" if filtre_en_cours == "Oui" else "Non"
-        df_series_filtered = df_series_filtered[df_series_filtered['en_cours'] == valeur_texte]
+        df_series_filtered = df_series_filtered[df_series_filtered['en_cours'] == filtre_en_cours]
 
     filtre_type_serie = st.radio(
-    "Type de série à afficher :",
-    options=["Toutes", "Séries de victoires", "Séries de défaites"],
-    horizontal=True
+        "Type de série à afficher :",
+        options=["Toutes", "Séries de victoires", "Séries de défaites"],
+        horizontal=True
     )
-
     if filtre_type_serie != "Toutes":
-        if filtre_type_serie == "Séries de victoires":
-            df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'victoires']
-        else:
-            df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == 'défaites']
+        condition = 'victoires' if filtre_type_serie == "Séries de victoires" else 'défaites'
+        df_series_filtered = df_series_filtered[df_series_filtered['resultat'].str.lower() == condition]
 
-    # 🎛️ Filtre sur le nombre de joueurs pour les séries
     options_joueurs_series = sorted(df_series['nb_joueurs'].dropna().unique())
     nb_joueurs_series = st.multiselect(
         "Filtrer les séries par nombre de joueurs :",
@@ -163,78 +124,58 @@ def main():
     )
     df_series_filtered = df_series_filtered[df_series_filtered['nb_joueurs'].isin(nb_joueurs_series)]
 
-    # Affichage du tableau filtré
     st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
 
+    # ⚔️ Confrontations optimisées
+    st.markdown("### ⚔️ Confrontations")
 
-
- # 👉 Application des filtres à df_confrontations
     df_confrontations_filtered = df_confrontations.copy()
 
-    if 'nb_joueurs' in df_confrontations.columns and st.session_state.nb_joueurs:
-        df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs'].isin(st.session_state.nb_joueurs)]
-
-    if 'nb_joueurs_opposant' in df_confrontations.columns and st.session_state.nb_joueurs_opposant:
-        df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(st.session_state.nb_joueurs_opposant)]
-
-    if st.session_state.combo:
-        df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['combo'].isin(st.session_state.combo)]
-
-    # 🎯 Filtre "en cours" juste avant l'affichage de df_confrontations
-    st.markdown("### ⚔️ Confrontations (NE PAS UTILISER, FAUX)")
-
-    # 🎛️ Filtre sur le nombre de joueurs pour les confrontations
     options_joueurs_confrontations = sorted(df_confrontations['nb_joueurs'].dropna().unique())
-    nb_joueurs_confrontations = st.multiselect(
+    selected_nb_joueurs_confrontations = st.multiselect(
         "Filtrer les confrontations par nombre de joueurs :",
         options=options_joueurs_confrontations,
         default=options_joueurs_confrontations
     )
-    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs'].isin(nb_joueurs_confrontations)]
+    df_confrontations_filtered = df_confrontations_filtered[
+        df_confrontations_filtered['nb_joueurs'].isin(selected_nb_joueurs_confrontations)
+    ]
 
-    # 🎛️ Filtre sur le nombre de joueurs opposant pour les confrontations
     options_joueurs_opposant_confrontations = sorted(df_confrontations['nb_joueurs_opposant'].dropna().unique())
-    nb_joueurs_opposant_confrontations = st.multiselect(
+    selected_nb_joueurs_opposant_confrontations = st.multiselect(
         "Filtrer les confrontations par nombre de joueurs opposant :",
         options=options_joueurs_opposant_confrontations,
         default=options_joueurs_opposant_confrontations
     )
-
-    df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['nb_joueurs_opposant'].isin(nb_joueurs_opposant_confrontations)]
-
-    selected_combos_confrontations = st.multiselect(
-            "Filtrer confrontations par combinaison",
-            combo_options,
-            default=[],
-            help="Laissez vide pour tout afficher"
-        )
-    st.session_state.combo = selected_combos_confrontations
-
-    if st.session_state.combo:
-        df_confrontations_filtered = df_confrontations_filtered[df_confrontations_filtered['combo'].isin(st.session_state.combo)]
-
-    
-    # Nb Matches
-    min_matches = int(df_confrontations['nb_matches'].min())
-    max_matches = int(df_confrontations['nb_matches'].max())
-    selected_nb_matches= st.slider(
-            "Sélectionnez le nombre de matches minimum ou maximum", 
-            min_value=min_matches, 
-            max_value=max_matches, 
-            value=st.session_state.matches
-        )
-    st.session_state.matches = selected_nb_matches
-
     df_confrontations_filtered = df_confrontations_filtered[
-        (df_confrontations_filtered['nb_matches'] >= st.session_state.matches[0]) & 
-        (df_confrontations_filtered['nb_matches'] <= st.session_state.matches[1])
+        df_confrontations_filtered['nb_joueurs_opposant'].isin(selected_nb_joueurs_opposant_confrontations)
     ]
 
-    # Affichage du tableau filtré
-    st.dataframe(df_confrontations_filtered, hide_index=True)
+    selected_combos_confrontations = st.multiselect(
+        "Filtrer confrontations par combinaison",
+        sorted(df_confrontations['combo'].dropna().unique()),
+        default=[],
+        help="Laissez vide pour tout afficher"
+    )
+    if selected_combos_confrontations:
+        df_confrontations_filtered = df_confrontations_filtered[
+            df_confrontations_filtered['combo'].isin(selected_combos_confrontations)
+        ]
 
-    cur.close()
-    conn.close()
+    min_matches = int(df_confrontations['nb_matches'].min())
+    max_matches = int(df_confrontations['nb_matches'].max())
+    selected_nb_matches = st.slider(
+        "Sélectionnez le nombre de matches minimum ou maximum",
+        min_value=min_matches,
+        max_value=max_matches,
+        value=(min_matches, max_matches)
+    )
+    df_confrontations_filtered = df_confrontations_filtered[
+        (df_confrontations_filtered['nb_matches'] >= selected_nb_matches[0]) &
+        (df_confrontations_filtered['nb_matches'] <= selected_nb_matches[1])
+    ]
+
+    st.dataframe(df_confrontations_filtered, hide_index=True)
 
 
 if __name__ == "__main__":
