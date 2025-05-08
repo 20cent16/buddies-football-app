@@ -122,7 +122,7 @@ def main():
     df_series_filtered = df_series_filtered[df_series_filtered['nb_joueurs'].isin(nb_joueurs_series)]
 
     # 🛠️ Assurez-vous de trier avant le formatage
-    df_series_filtered = df_series_filtered.sort_values(by='debut', ascending=False)
+    df_series_filtered = df_series_filtered.sort_values(by='fin', ascending=False)
 
     st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
 
