@@ -19,17 +19,13 @@ def main():
 
     # 🔄 Chargement des données
     df = load_data('SELECT * FROM public.combo_stats ORDER BY victoires DESC')
-    df_series = load_data('SELECT * FROM public.series ORDER BY debut')
+    df_series = load_data('SELECT combo, nb_joueurs,debut::date AS debut, fin::date AS fin, resultat, en_cours FROM public.series ORDER BY debut')
     df_confrontations = load_data('SELECT * FROM public.combo_confrontations ORDER BY victoires DESC')
 
     # 🔧 Optimisation des types
     for col in ['nb_joueurs', 'nb_joueurs_opposant', 'nb_matches']:
         if col in df_confrontations.columns:
             df_confrontations[col] = pd.to_numeric(df_confrontations[col], errors='coerce').astype('Int16')
-
-    # 👉 Conversion des timestamps
-    df_series['debut'] = pd.to_datetime(df_series['debut'], errors='coerce').dt.normalize()
-    df_series['fin'] = pd.to_datetime(df_series['fin'], errors='coerce').dt.normalize()
 
     # Initialisation des états
     if 'matches' not in st.session_state:
