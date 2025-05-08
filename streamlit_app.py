@@ -99,7 +99,7 @@ def main():
     filtre_en_cours = st.radio(
         "Afficher uniquement les séries en cours ?",
         options=["Tous", "Oui", "Non"],
-        value="Oui",
+        index=1,  # 👉 "Oui"
         horizontal=True
     )
     if filtre_en_cours != "Tous":
