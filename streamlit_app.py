@@ -19,7 +19,7 @@ def main():
 
     # 🔄 Chargement des données
     df = load_data('SELECT * FROM public.combo_stats ORDER BY victoires DESC')
-    df_series = load_data('SELECT combo, nb_joueurs,debut::date AS debut, fin::date AS fin, resultat, en_cours FROM public.series ORDER BY debut')
+    df_series = load_data('SELECT nb_joueurs,combo,nb_matches,resultat,debut::date AS debut, fin::date AS fin, en_cours FROM public.series ORDER BY debut')
     df_confrontations = load_data('SELECT * FROM public.combo_confrontations ORDER BY victoires DESC')
 
     # 🔧 Optimisation des types
