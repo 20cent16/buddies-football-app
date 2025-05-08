@@ -27,9 +27,9 @@ def main():
         if col in df_confrontations.columns:
             df_confrontations[col] = pd.to_numeric(df_confrontations[col], errors='coerce').astype('Int16')
 
-    # 👉 Conversion des timestamps en format datetime (pour tri correct)
-    df_series['debut'] = pd.to_datetime(df_series['debut'], errors='coerce')
-    df_series['fin'] = pd.to_datetime(df_series['fin'], errors='coerce')
+    # 👉 Conversion des timestamps
+    df_series['debut'] = pd.to_datetime(df_series['debut'], errors='coerce').dt.normalize()
+    df_series['fin'] = pd.to_datetime(df_series['fin'], errors='coerce').dt.normalize()
 
     # Initialisation des états
     if 'matches' not in st.session_state:
