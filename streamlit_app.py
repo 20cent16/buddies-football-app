@@ -128,11 +128,6 @@ def main():
     # 🛠️ Assurez-vous de trier avant le formatage
     df_series_filtered = df_series_filtered.sort_values(by='debut', ascending=False)
 
-    # ✅ Formatage après le tri
-    df_series_filtered['debut'] = df_series_filtered['debut'].dt.strftime('%d/%m/%Y')
-    df_series_filtered['fin'] = df_series_filtered['fin'].dt.strftime('%d/%m/%Y')
-
-
     st.dataframe(df_series_filtered, use_container_width=True, hide_index=True)
 
     # ⚔️ Confrontations optimisées
